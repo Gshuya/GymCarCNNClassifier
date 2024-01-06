@@ -1,6 +1,8 @@
 import sys
 import numpy as np
 from tensorflow.keras.models import load_model
+from gymnasium.wrappers.monitoring.video_recorder import VideoRecorder
+
 
 try:
     import gymnasium as gym
@@ -10,29 +12,47 @@ except ModuleNotFoundError:
     sys.exit(1)
 
 
-def play(env, model):
 
+
+def play(env, model):
+    
     seed = 2000
     obs, _ = env.reset(seed=seed)
-    
+
     # drop initial frames
     action0 = 0
     for i in range(50):
         obs,_,_,_,_ = env.step(action0)
     
     done = False
+    frames = []
+    # Use VideoRecorder for capturing frames
+    video_recorder = VideoRecorder(env, "video/test.mp4", enabled=True)
     while not done:
-        p = model.predict(obs) # adapt to your model
+        p = model.predict(obs.reshape(1,96,96,3)) # adapt to your model
         action = np.argmax(p)  # adapt to your model
+        print(action)
         obs, _, terminated, truncated, _ = env.step(action)
+
         done = terminated or truncated
+          # Capture the current frame
+        
+        # Render the environment and record the frame
+        video_recorder.capture_frame()
+
+
+    # Save the recorded frames as a video
+    video_recorder.close()
+
+
+   
 
 
 
 env_arguments = {
     'domain_randomize': False,
     'continuous': False,
-    'render_mode': 'human'
+    'render_mode': "rgb_array"
 }
 
 env_name = 'CarRacing-v2'
@@ -43,18 +63,8 @@ print("Action space:", env.action_space)
 print("Observation space:", env.observation_space)
 
 
-# load model function
-def loadmodel(filename):
-    try:
-        model = load_model(filename)
-        print("\nModel loaded successfully from file %s\n" %filename)
-    except OSError:
-        print("\nModel file %s not found!!!\n" %filename)
-        model = None
-    return model
-
 # your trained model
-model = loadmodel('models/model1_3_epochs.h5')
+model = load_model('models/model1_NoAug_20_epochs.h5')
 
 play(env, model)
 
