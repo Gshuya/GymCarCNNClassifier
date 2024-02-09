@@ -13,7 +13,6 @@ except ModuleNotFoundError:
 
 
 
-
 def play(env, model):
     
     seed = 2000
@@ -28,6 +27,9 @@ def play(env, model):
     frames = []
     # Use VideoRecorder for capturing frames
     video_recorder = VideoRecorder(env, "video/test.mp4", enabled=True)
+    # set the video velocity
+    video_recorder.frames_per_sec = 30
+    
     while not done:
         p = model.predict(obs.reshape(1,96,96,3)) # adapt to your model
         action = np.argmax(p)  # adapt to your model
@@ -43,9 +45,6 @@ def play(env, model):
 
     # Save the recorded frames as a video
     video_recorder.close()
-
-
-   
 
 
 
@@ -64,7 +63,7 @@ print("Observation space:", env.observation_space)
 
 
 # your trained model
-model = load_model('models/model1_NoAug_20_epochs.h5')
+model = load_model('models/model1_20_epochs_1e-4.h5')
 
 play(env, model)
 
