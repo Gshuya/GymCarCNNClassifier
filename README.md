@@ -1,5 +1,5 @@
-Gym Car CNNC lassifier
-## Using CNN based model to solve an image classification problem to learn the behaviour of a racing car in a Gym environment.
+## Gym Car CNNC lassifier
+Using CNN based model to solve an image classification problem to learn the behaviour of a racing car in a Gym environment.
 
 
 
